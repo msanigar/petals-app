@@ -12,7 +12,6 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-// Register the necessary components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -33,7 +32,7 @@ const SummaryView = forwardRef((props, ref) => {
       .then(response => {
         setData(response.data);
         const uniqueTeams = [...new Set(response.data.map(d => d.team))];
-        setTeams(uniqueTeams);
+        setTeams(['All', ...uniqueTeams]);
       })
       .catch(error => console.error('Error fetching data:', error));
   };
@@ -49,7 +48,7 @@ const SummaryView = forwardRef((props, ref) => {
   const filteredData = team === 'All' ? data : data.filter(d => d.team === team);
 
   const chartData = {
-    labels: filteredData.map(d => d.date),
+    labels: filteredData.map(d => d.date.split('T')[0]),
     datasets: [
       {
         label: 'Productivity 🚀',
@@ -84,6 +83,33 @@ const SummaryView = forwardRef((props, ref) => {
     ],
   };
 
+  const options = {
+    plugins: {
+      legend: {
+        labels: {
+          color: 'white'
+        }
+      },
+      title: {
+        display: true,
+        text: 'PETALs Data Over Time',
+        color: 'white'
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: 'white'
+        }
+      },
+      y: {
+        ticks: {
+          color: 'white'
+        }
+      }
+    }
+  };
+
   return (
     <div>
       <div className="field">
@@ -91,7 +117,6 @@ const SummaryView = forwardRef((props, ref) => {
         <div className="control">
           <div className="select">
             <select value={team} onChange={(e) => setTeam(e.target.value)}>
-              <option value="All">All</option>
               {teams.map(team => (
                 <option key={team} value={team}>{team}</option>
               ))}
@@ -99,7 +124,9 @@ const SummaryView = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-      <Line data={chartData} />
+      <div className="chart-container">
+        <Line data={chartData} options={options} />
+      </div>
     </div>
   );
 });

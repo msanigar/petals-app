@@ -9,26 +9,42 @@ router.get('/', async (req, res) => {
     res.json(petalsData);
   } catch (err) {
     res.status(500).json({ message: err.message });
-}
+  }
 });
 
 router.post('/', async (req, res) => {
-const petals = new Petals({
-  team: req.body.team,
-  date: req.body.date,
-  productivity: req.body.productivity,
-  enjoyment: req.body.enjoyment,
-  teamwork: req.body.teamwork,
-  learning: req.body.learning,
-  stress: req.body.stress,
+  const { team, date, productivity, enjoyment, teamwork, learning, stress } = req.body;
+
+  try {
+    const existingEntry = await Petals.findOne({ team, date });
+    if (existingEntry) {
+      return res.status(400).json({ message: 'Entry for the same team and date already exists.' });
+    }
+
+    const petals = new Petals({
+      team,
+      date,
+      productivity,
+      enjoyment,
+      teamwork,
+      learning,
+      stress,
+    });
+
+    const newPetals = await petals.save();
+    res.status(201).json(newPetals);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
-try {
-  const newPetals = await petals.save();
-  res.status(201).json(newPetals);
-} catch (err) {
-  res.status(400).json({ message: err.message });
-}
+router.delete('/:id', async (req, res) => {
+  try {
+    await Petals.findByIdAndDelete(req.params.id);
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;

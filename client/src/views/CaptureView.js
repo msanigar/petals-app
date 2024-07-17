@@ -11,6 +11,7 @@ function CaptureView({ closeModal }) {
     learning: '',
     stress: '',
   });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,9 +23,13 @@ function CaptureView({ closeModal }) {
     axios.post('/api/petals', formData)
       .then(response => {
         console.log('Data submitted:', response.data);
+        setError('');
         closeModal();
       })
-      .catch(error => console.error('Error submitting data:', error));
+      .catch(error => {
+        console.error('Error submitting data:', error);
+        setError(error.response?.data?.message || 'An error occurred');
+      });
   };
 
   return (
@@ -56,7 +61,6 @@ function CaptureView({ closeModal }) {
             </div>
           </div>
 
-          {/* Add input fields for each PETAL criteria similarly */}
           <div className="field">
             <label className="label">Productivity 🚀</label>
             <div className="control">
@@ -91,6 +95,12 @@ function CaptureView({ closeModal }) {
               <input className="input" type="number" name="stress" value={formData.stress} onChange={handleChange} />
             </div>
           </div>
+
+          {error && (
+            <div className="notification is-danger">
+              {error}
+            </div>
+          )}
 
           <div className="field">
             <div className="control">
