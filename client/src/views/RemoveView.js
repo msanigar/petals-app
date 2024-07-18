@@ -55,7 +55,7 @@ function RemoveView() {
         <tbody>
           {filteredData.map(record => (
             <tr key={record._id}>
-              <td>{record.date.split('T')[0]}</td> {/* Display only the date part */}
+              <td>{record.date.split('T')[0]}</td>
               {team === 'All' && <td>{record.team}</td>}
               <td>
                 <button className="button is-danger" onClick={() => handleDelete(record._id)}>
