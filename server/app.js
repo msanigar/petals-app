@@ -6,6 +6,7 @@ require('dotenv').config();
 
 const petalsRoutes = require('./routes/petals');
 const eventsRoutes = require('./routes/events');
+const linearBRoutes = require('./routes/linearb.routes');
 
 const app = express();
 
@@ -16,6 +17,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 app.use('/api/petals', petalsRoutes);
 app.use('/api/events', eventsRoutes);
+app.use('/api/linearb', linearBRoutes);
 
 const PORT = process.env.PORT || 3013;
 app.listen(PORT, () => {
