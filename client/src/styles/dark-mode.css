@@ -1,0 +1,70 @@
+/* Dark mode for Bulma */
+html {
+    background-color: #121212;
+    color: #ffffff;
+  }
+  
+  body {
+    background-color: #121212;
+    color: #ffffff;
+  }
+  
+  .navbar, .card, .modal-content, .dropdown-menu {
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+  
+  .navbar-item, .dropdown-item {
+    color: #ffffff;
+  }
+  
+  .button {
+    background-color: #333;
+    color: #ffffff;
+  }
+  
+  .button.is-primary {
+    background-color: #6200ee;
+    border-color: #6200ee;
+    color: #ffffff;
+  }
+  
+  .button.is-link {
+    background-color: #03dac6;
+    border-color: #03dac6;
+    color: #000000;
+  }
+  
+  .button.is-danger {
+    background-color: #b00020;
+    border-color: #b00020;
+    color: #ffffff;
+  }
+  
+  .input, .textarea, .select select {
+    background-color: #333;
+    border-color: #444;
+    color: #ffffff;
+  }
+  
+  .label, .help {
+    color: #ffffff;
+  }
+  
+  .table {
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+  
+  .table thead th {
+    background-color: #333;
+    color: #ffffff;
+  }
+  
+  .table tbody tr {
+    border-bottom: 1px solid #444;
+  }
+  
+  .field {
+    margin-bottom: 1rem;
+  }

@@ -16,6 +16,7 @@ import { Line } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import 'chartjs-adapter-luxon';
 
+// Register the necessary components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -33,14 +34,19 @@ const SummaryView = forwardRef((props, ref) => {
   const [data, setData] = useState([]);
   const [events, setEvents] = useState([]);
   const [team, setTeam] = useState('All');
+  const [timeFilter, setTimeFilter] = useState('All');
   const [teams, setTeams] = useState([]);
+  const [timeFilters, setTimeFilters] = useState(['All', 'Last 3 Months']);
 
   const fetchData = () => {
     axios.get('/api/petals')
       .then(response => {
         setData(response.data);
         const uniqueTeams = [...new Set(response.data.map(d => d.team))];
+        const uniqueYears = [...new Set(response.data.map(d => new Date(d.date).getFullYear()))];
+        const yearFilters = uniqueYears.map(year => year.toString());
         setTeams(['All', ...uniqueTeams]);
+        setTimeFilters(['All', 'Last 3 Months', ...yearFilters]);
       })
       .catch(error => console.error('Error fetching data:', error));
   };
@@ -60,12 +66,31 @@ const SummaryView = forwardRef((props, ref) => {
     reFetch: fetchData
   }));
 
-  const filteredData = team === 'All' ? data : data.filter(d => d.team === team);
+  const applyFilters = (data) => {
+    let filteredData = data;
 
+    if (team !== 'All') {
+      filteredData = filteredData.filter(d => d.team === team);
+    }
+
+    if (timeFilter === 'Last 3 Months') {
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+      filteredData = filteredData.filter(d => new Date(d.date) >= threeMonthsAgo);
+    } else if (timeFilter !== 'All') {
+      filteredData = filteredData.filter(d => new Date(d.date).getFullYear() === parseInt(timeFilter));
+    }
+
+    return filteredData;
+  };
+
+  const filteredData = applyFilters(data);
+
+  // Sort data by date
   const sortedData = filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
   const chartData = {
-    labels: sortedData.map(d => d.date.split('T')[0]),
+    labels: sortedData.map(d => d.date.split('T')[0]), // Extract date part only
     datasets: [
       {
         label: 'Productivity 🚀',
@@ -123,13 +148,13 @@ const SummaryView = forwardRef((props, ref) => {
     plugins: {
       legend: {
         labels: {
-          color: 'white'
+          color: 'white' // Set the legend text color to white
         }
       },
       title: {
         display: true,
         text: 'PETALs Data Over Time',
-        color: 'white'
+        color: 'white' // Set the title text color to white
       },
       annotation: {
         annotations: annotations
@@ -150,12 +175,12 @@ const SummaryView = forwardRef((props, ref) => {
           unit: 'day'
         },
         ticks: {
-          color: 'white'
+          color: 'white' // Set the x-axis tick color to white
         }
       },
       y: {
         ticks: {
-          color: 'white'
+          color: 'white' // Set the y-axis tick color to white
         }
       }
     }
@@ -170,6 +195,18 @@ const SummaryView = forwardRef((props, ref) => {
             <select value={team} onChange={(e) => setTeam(e.target.value)}>
               {teams.map(team => (
                 <option key={team} value={team}>{team}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div className="field">
+        <label className="label">Time Filter</label>
+        <div className="control">
+          <div className="select">
+            <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)}>
+              {timeFilters.map(filter => (
+                <option key={filter} value={filter}>{filter}</option>
               ))}
             </select>
           </div>

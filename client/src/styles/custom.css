@@ -21,3 +21,11 @@
     font-weight: bold;
   }
   
+  .chart-container {
+    height: calc(100vh - 200px);
+  }
+  
+  .field {
+    margin-bottom: 20px;
+  }
+  
