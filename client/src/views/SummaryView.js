@@ -10,8 +10,7 @@ import {
   Tooltip,
   Legend,
   TimeScale,
-  TimeSeriesScale,
-  Filler
+  TimeSeriesScale
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
@@ -27,8 +26,7 @@ ChartJS.register(
   Legend,
   TimeScale,
   TimeSeriesScale,
-  annotationPlugin,
-  Filler
+  annotationPlugin
 );
 
 const SummaryView = forwardRef((props, ref) => {
@@ -102,26 +100,24 @@ const SummaryView = forwardRef((props, ref) => {
     ],
   };
 
-  const annotations = events.reduce((acc, event, index) => {
-    acc[`event${index}`] = {
-      type: 'line',
-      mode: 'vertical',
-      scaleID: 'x',
-      value: event.date.split('T')[0],
-      borderColor: 'red',
-      borderWidth: 2,
-      label: {
-        content: event.description,
-        enabled: true,
-        position: 'top',
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        color: 'white',
-        rotation: 90,
-        yAdjust: -10,
-      },
-    };
-    return acc;
-  }, {});
+  const eventColors = ['red', 'blue', 'green', 'purple', 'orange'];
+
+  const annotations = events.map((event, index) => ({
+    type: 'line',
+    xMin: event.date.split('T')[0],
+    xMax: event.date.split('T')[0],
+    borderColor: eventColors[index % eventColors.length],
+    borderWidth: 2,
+    label: {
+      content: event.description,
+      enabled: true,
+      position: 'top',
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      color: 'white',
+      rotation: 90,
+      yAdjust: -10
+    }
+  }));
 
   const options = {
     plugins: {
@@ -136,13 +132,13 @@ const SummaryView = forwardRef((props, ref) => {
         color: 'white'
       },
       annotation: {
-        annotations,
+        annotations: annotations
       },
       tooltip: {
         callbacks: {
-          label: function(tooltipItem) {
-            const event = events.find(e => e.date.split('T')[0] === tooltipItem.label);
-            return event ? event.description : tooltipItem.raw;
+          label: function(context) {
+            const event = events.find(e => e.date.split('T')[0] === context.label);
+            return event ? event.description : '';
           }
         }
       }
@@ -181,6 +177,16 @@ const SummaryView = forwardRef((props, ref) => {
       </div>
       <div className="chart-container">
         <Line data={chartData} options={options} />
+      </div>
+      <div className="legend">
+        <h2 className="subtitle">Event Legend</h2>
+        <ul>
+          {events.map((event, index) => (
+            <li key={index} style={{ color: eventColors[index % eventColors.length] }}>
+              {event.description} ({event.date.split('T')[0]})
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

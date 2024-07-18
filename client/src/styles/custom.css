@@ -6,3 +6,18 @@
 .container {
     margin: 0 auto;
 }
+
+.legend {
+    margin-top: 20px;
+  }
+  
+  .legend ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .legend li {
+    margin: 5px 0;
+    font-weight: bold;
+  }
+  
